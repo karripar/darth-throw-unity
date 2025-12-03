@@ -5,30 +5,37 @@ public class DartSpawner : MonoBehaviour
 {
     public static DartSpawner Instance;
     public GameObject dartPrefab;
-    public Transform spawnPoint; // Where the dart sits on the table
+    public Transform spawnPoint;
 
     void Awake()
     {
         Instance = this;
     }
 
+    void Start()
+    {
+        // Spawn the first dart on the table
+        SpawnNewDart();
+    }
+
     public void SpawnNewDart()
     {
-        // Spawn dart slightly above the table to avoid collider intersection
         Vector3 spawnPos = spawnPoint.position + new Vector3(0, 0.02f, 0);
         GameObject newDart = Instantiate(dartPrefab, spawnPos, spawnPoint.rotation);
 
-        // Reset physics
+        // Reset Rigidbody
         Rigidbody rb = newDart.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.isKinematic = false;        // Enable physics
-            rb.linearVelocity = Vector3.zero;    // Reset movement
-            rb.angularVelocity = Vector3.zero; // Reset rotation
+            rb.isKinematic = false;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         }
 
-        // Ensure XR Grab Interactable is enabled
+        // Enable grab interactable
         UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grab = newDart.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        if (grab != null) grab.enabled = true;
+        if (grab != null)
+            grab.enabled = true;
     }
 }
